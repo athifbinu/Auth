@@ -6,8 +6,9 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithPopup,
 } from "firebase/auth";
-import { auth } from "../../Api/FireaseConfig";
+import { auth, provider } from "../../Api/FireaseConfig";
 import Swal from "sweetalert2";
 
 const Login = () => {
@@ -49,6 +50,21 @@ const Login = () => {
         title: "error",
         text: "Something Is Wrong",
       });
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setLoading(true);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log("User signed in:", user);
+      localStorage.setItem(user);
+      navigate("/home");
+    } catch (error) {
+      console.error("Error signing in with Google:", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -106,7 +122,10 @@ const Login = () => {
             <hr className="border-gray-400" />
           </div>
 
-          <button className="bg-white border py-2 w-full rounded-xl mt-5 flex justify-center items-center text-sm hover:scale-105 duration-300 text-[#002D74]">
+          <button
+            onClick={handleGoogleSignIn}
+            className="bg-white border py-2 w-full rounded-xl mt-5 flex justify-center items-center text-sm hover:scale-105 duration-300 text-[#002D74]"
+          >
             <svg
               className="mr-3"
               xmlns="http://www.w3.org/2000/svg"
